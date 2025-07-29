@@ -999,20 +999,35 @@
             height: 100%;
         }
 
-        .gyro-controls {
-            position: fixed;
-            top: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(10px);
-            border-radius: 25px;
-            padding: 15px 25px;
-            z-index: 12001;
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
+      .gyro-controls {
+    position: fixed;
+    top: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    border-radius: 25px;
+    padding: 15px 25px;
+    z-index: 12001;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    min-width: 300px;
+    justify-content: space-between;
+}
+
+.gyro-logos {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.gyro-logo {
+    height: 35px;
+    width: auto;
+    opacity: 0.9;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+}
 
         .gyro-status {
             color: #00ff00;
@@ -1181,6 +1196,45 @@
             max-width: 300px;
             border: 1px solid rgba(255, 255, 255, 0.2);
         }
+        .vr-notification {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.9);
+    color: white;
+    padding: 20px 30px;
+    border-radius: 15px;
+    font-size: 16px;
+    text-align: center;
+    z-index: 15002;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    max-width: 300px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.vr-notification.show {
+    opacity: 1;
+}
+
+/* ✅ NOTIFICAÇÃO MELHORADA PARA AVISOS */
+.vr-notification strong {
+    color: #00d4aa;
+}
+
+.vr-notification em {
+    color: #ffa500;
+    font-style: italic;
+}
+
+@media (max-width: 768px) {
+    .vr-notification {
+        max-width: calc(100vw - 40px);
+        font-size: 15px;
+        padding: 18px 25px;
+    }
+}
 
         .vr-notification.show {
             opacity: 1;
@@ -1392,12 +1446,14 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
     z-index: 10000;
     pointer-events: none;
-    opacity: 0.8;
-    transition: all 0.3s ease;
+    opacity: 0.9;
+    transition: all 0.2s ease;
+    filter: drop-shadow(0 0 4px rgba(0, 0, 0, 0.5));
+    display: none; /* INICIAR ESCONDIDA */
 }
 
 
@@ -1424,13 +1480,26 @@ body.vr-quest-mode .crosshair-pointer {
 
 /* ANIMAÇÃO QUANDO MIRA NO HOTSPOT */
 .crosshair-pointer.targeting {
-    transform: translate(-50%, -50%) scale(1.2);
+    transform: translate(-50%, -50%) scale(1.15);
     opacity: 1;
+    filter: drop-shadow(0 0 8px rgba(0, 255, 136, 0.6));
 }
 
-.crosshair-arrow.targeting {
-    fill: #00ff00;
-    animation: pulse 0.5s infinite;
+.crosshair-arrow.targeting circle {
+    stroke: #00ff88;
+    fill: #00ff88;
+    animation: pulse-circle 0.6s infinite;
+}
+
+@keyframes pulse-circle {
+    0%, 100% { 
+        opacity: 0.8; 
+        transform: scale(1);
+    }
+    50% { 
+        opacity: 1; 
+        transform: scale(1.1);
+    }
 }
 
 @keyframes pulse {
@@ -1460,7 +1529,7 @@ body.vr-quest-mode .crosshair-pointer {
 .crosshair-progress-bar {
     height: 100%;
     width: 0%;
-    background: linear-gradient(90deg, #00ff00, #ffff00, #ff0000);
+    background: linear-gradient(90deg, #e7e5e5, #4e4e4d, #070707);
     border-radius: 3px;
     transition: width 0.1s ease;
 }
@@ -1471,16 +1540,18 @@ body.vr-quest-mode .crosshair-pointer {
     top: calc(50% - 60px);
     left: 50%;
     transform: translateX(-50%);
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.9);
     color: white;
-    padding: 8px 12px;
-    border-radius: 8px;
-    font-size: 14px;
-    font-weight: bold;
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 13px;
+    font-weight: 500;
     z-index: 10000;
     opacity: 0;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.2s ease;
     pointer-events: none;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(5px);
 }
 
 .crosshair-tooltip.show {
@@ -1590,6 +1661,70 @@ body.vr-quest-mode .crosshair-tooltip {
     z-index: 30000 !important;
 }
 
+
+@media (max-width: 768px) {
+    .gyro-controls {
+        min-width: 250px;
+        padding: 12px 20px;
+        gap: 15px;
+    }
+    
+    .gyro-logo {
+        height: 30px;
+    }
+    
+    .gyro-exit {
+        padding: 6px 12px;
+        font-size: 12px;
+    }
+}
+
+/* ✅ GARANTIR QUE VR SUMA COMPLETAMENTE */
+.gyro-mode:not(.active) {
+    display: none !important;
+    visibility: hidden !important;
+    opacity: 0 !important;
+}
+
+.gyro-mode:not(.active) .gyro-controls {
+    display: none !important;
+}
+
+.gyro-mode:not(.active) .gyro-viewer {
+    display: none !important;
+}
+
+/* Esconder elementos VR quando não ativo */
+body:not(.gyro-active) #crosshairPointer,
+body:not(.gyro-active) #crosshairProgress,
+body:not(.gyro-active) #crosshairTooltip {
+    display: none !important;
+}
+
+
+/* ✅ OTIMIZAÇÕES PARA GIROSCÓPIO NO MOBILE */
+@media (max-width: 768px) {
+    body.gyro-active {
+        /* Otimizar performance no mobile */
+        -webkit-transform: translate3d(0,0,0);
+        transform: translate3d(0,0,0);
+        -webkit-backface-visibility: hidden;
+        backface-visibility: hidden;
+        
+        /* Evitar zoom acidental */
+        touch-action: none;
+        user-select: none;
+        -webkit-user-select: none;
+    }
+    
+    body.gyro-active #viewer {
+        /* Melhor performance de renderização */
+        will-change: transform;
+        -webkit-transform: translate3d(0,0,0);
+        transform: translate3d(0,0,0);
+    }
+}
+
     </style>
 </head>
 <body>
@@ -1597,8 +1732,12 @@ body.vr-quest-mode .crosshair-tooltip {
     <!-- SETINHA/MIRA CENTRAL -->
 <div class="crosshair-pointer" id="crosshairPointer">
     <svg class="crosshair-arrow" id="crosshairArrow" viewBox="0 0 24 24">
-        <path d="M12,2L13.09,8.26L22,9L13.09,9.74L12,16L10.91,9.74L2,9L10.91,8.26L12,2Z"/>
-        <circle cx="12" cy="12" r="2" fill="#ffffff" opacity="0.8"/>
+        <!-- Bolinha externa -->
+        <circle cx="12" cy="12" r="8" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.8"/>
+        <!-- Bolinha central -->
+        <circle cx="12" cy="12" r="3" fill="#ffffff" opacity="0.9"/>
+        <!-- Ponto central -->
+        <circle cx="12" cy="12" r="1" fill="#ffffff" opacity="1"/>
     </svg>
 </div>
 
@@ -1705,13 +1844,18 @@ body.vr-quest-mode .crosshair-tooltip {
     </div>
 
     <!-- MODO VR LIVRE (GIROSCÓPIO) -->
-    <div class="gyro-mode" id="gyroMode">
-        <div class="gyro-controls">
-            <div class="gyro-status" id="gyroStatus"> Modo Livre Ativo</div>
-            <button class="gyro-exit" id="gyroExitBtn">Sair</button>
+  <!-- MODO VR LIVRE (GIROSCÓPIO) -->
+<div class="gyro-mode" id="gyroMode">
+    <div class="gyro-controls">
+        <div class="gyro-logos">
+            <img src="./submarcatour.png" alt="Logo Principal" class="gyro-logo">
+            <img src="./logoprincipal2.png" alt="Logo Secundário" class="gyro-logo">
         </div>
-        <div class="gyro-viewer" id="gyroViewer"></div>
+        <div class="gyro-status" id="gyroStatus">🥽 Modo Livre Ativo</div>
+        <button class="gyro-exit" id="gyroExitBtn">✕ Sair</button>
     </div>
+    <div class="gyro-viewer" id="gyroViewer"></div>
+</div>
 
     <!-- MODO VR ESTEREOSCÓPICO -->
     <div class="stereo-mode" id="stereoMode">
@@ -1970,7 +2114,7 @@ body.vr-quest-mode .crosshair-tooltip {
                 this.orientation = { alpha: 0, beta: 0, gamma: 0 };
                 this.gazeTarget = null;
                 this.gazeStartTime = 0;
-                this.gazeDuration = 2000; // 2 segundos
+                this.gazeDuration = 1500; // 2 segundos
                 
                 // Elementos DOM
                 this.vrButton = null;
@@ -2091,9 +2235,20 @@ body.vr-quest-mode .crosshair-tooltip {
                 }
                 
                 // Botões de saída
+                // Remover eventos antigos primeiro
                 const gyroExitBtn = document.getElementById('gyroExitBtn');
                 if (gyroExitBtn) {
-                    gyroExitBtn.addEventListener('click', () => this.exitVR());
+                    // Limpar eventos existentes
+                    gyroExitBtn.replaceWith(gyroExitBtn.cloneNode(true));
+                    
+                    // Adicionar novo evento
+                    const newGyroBtn = document.getElementById('gyroExitBtn');
+                    newGyroBtn.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        console.log("🚪 Saindo do VR Livre...");
+                        this.exitVR();
+                    });
                 }
                 
                 // Eventos de orientação
@@ -2138,51 +2293,91 @@ body.vr-quest-mode .crosshair-tooltip {
                     return true;
                 }
             }
+            initializeGyroCalibration() {
+    // CALIBRAÇÃO INICIAL PARA ESTABILIDADE
+    this.baseOrientation = { alpha: 0, beta: 0, gamma: 0 };
+    this.smoothYaw = 0;
+    this.smoothPitch = 0;
+    this.isCalibrated = false;
+    
+    console.log("🎯 Sistema de giroscópio calibrado");
+}
             
-            handleOrientation(event) {
-            if (!this.isVRActive || this.currentMode !== 'gyro') return;
-            
-            // VALORES DE DEBUG
-            this.orientation.alpha = event.alpha || 0;
-            this.orientation.beta = event.beta || 0;
-            this.orientation.gamma = event.gamma || 0;
-            
-            console.log(`📱 Orientação: α=${this.orientation.alpha.toFixed(1)}° β=${this.orientation.beta.toFixed(1)}° γ=${this.orientation.gamma.toFixed(1)}°`);
-            
-            this.applyOrientationToCamera();
-            }
+         handleOrientation(event) {
+    if (!this.isVRActive || this.currentMode !== 'gyro') return;
+
+    // ✅ SISTEMA MAIS RESPONSIVO E IMERSIVO
+    const alpha = event.alpha || 0;  // Rotação Y (esquerda/direita)
+    const beta = event.beta || 0;    // Rotação X (cima/baixo)
+    const gamma = event.gamma || 0;  // Rotação Z (inclinação)
+
+    // ✅ APLICAR IMEDIATAMENTE SEM FILTRO EXCESSIVO
+    this.orientation.alpha = alpha;
+    this.orientation.beta = beta;
+    this.orientation.gamma = gamma;
+
+    this.applyOrientationToCamera();
+}
                     
-                       applyOrientationToCamera() {
-                if (!this.isVRActive) return;
-                
-                const alpha = (this.orientation.alpha * Math.PI) / 180;
-                const beta = (this.orientation.beta * Math.PI) / 180;
-                const gamma = (this.orientation.gamma * Math.PI) / 180;
-                
-                // ✅ CORRIGIR DIREÇÃO - AGORA NATURAL
-                let targetRotationY = alpha; // REMOVIDO O SINAL NEGATIVO
-                let targetRotationX = Math.max(-Math.PI/4, Math.min(Math.PI/4, beta - Math.PI/2));
-                
-                if (this.currentMode === 'gyro') {
-                    const smoothFactor = 0.03;
-                    
-                    if (!window.smoothRotationY) window.smoothRotationY = targetRotationY;
-                    if (!window.smoothRotationX) window.smoothRotationX = targetRotationX;
-                    
-                    const deltaY = Math.abs(targetRotationY - window.smoothRotationY);
-                    const deltaX = Math.abs(targetRotationX - window.smoothRotationX);
-                    
-                    if (deltaY < Math.PI && deltaX < Math.PI/2) {
-                        window.smoothRotationY += (targetRotationY - window.smoothRotationY) * smoothFactor;
-                        window.smoothRotationX += (targetRotationX - window.smoothRotationX) * smoothFactor;
-                    }
-                    
-                    if (window.camera) {
-                        window.camera.rotation.order = 'YXZ';
-                        window.camera.rotation.y = window.smoothRotationY;
-                        window.camera.rotation.x = window.smoothRotationX;
-                        window.camera.rotation.z = 0;
-                    }
+                   applyOrientationToCamera() {
+    if (!this.isVRActive || this.currentMode !== 'gyro') return;
+    
+    // ✅ CONVERSÃO MAIS RESPONSIVA E NATURAL
+    const alpha = this.orientation.alpha * (Math.PI / 180);
+    const beta = this.orientation.beta * (Math.PI / 180);
+    const gamma = this.orientation.gamma * (Math.PI / 180);
+    
+    // ✅ CÁLCULO MAIS DIRETO E RESPONSIVO
+    let yaw = -alpha;  // Negativo para rotação natural
+    let pitch = beta - Math.PI / 2;
+    let roll = gamma;
+    
+    // ✅ LIMITADORES MAIS AMPLOS PARA MAIOR LIBERDADE
+    pitch = Math.max(-Math.PI * 0.4, Math.min(Math.PI * 0.4, pitch));
+    
+    // ✅ DETECÇÃO DE ORIENTAÇÃO DO DISPOSITIVO
+    const isLandscape = window.screen && window.screen.orientation && 
+                       (window.screen.orientation.angle === 90 || window.screen.orientation.angle === -90);
+    
+    if (isLandscape) {
+        // Ajustar para modo paisagem
+        const temp = yaw;
+        yaw = pitch;
+        pitch = temp;
+    }
+    
+    // ✅ APLICAÇÃO MAIS SUAVE MAS RESPONSIVA
+    const lerpFactor = 0.08; // Mais responsivo que 0.015
+    
+    // ✅ INICIALIZAR SE NECESSÁRIO
+    if (this.smoothYaw === undefined) this.smoothYaw = yaw;
+    if (this.smoothPitch === undefined) this.smoothPitch = pitch;
+    
+    // ✅ CORREÇÃO DE WRAP-AROUND MELHORADA
+    let deltaYaw = yaw - this.smoothYaw;
+    while (deltaYaw > Math.PI) deltaYaw -= 2 * Math.PI;
+    while (deltaYaw < -Math.PI) deltaYaw += 2 * Math.PI;
+    
+    // ✅ APLICAR SUAVIZAÇÃO MAIS RESPONSIVA
+    this.smoothYaw += deltaYaw * lerpFactor;
+    this.smoothPitch += (pitch - this.smoothPitch) * lerpFactor;
+    
+    // ✅ APLICAR À CÂMERA COM RESPONSIVIDADE
+    if (window.camera) {
+        window.camera.rotation.order = 'YXZ';
+        window.camera.rotation.y = this.smoothYaw;
+        window.camera.rotation.x = this.smoothPitch;
+        window.camera.rotation.z = roll * 0.1; // Leve inclinação para imersão
+        
+        // ✅ FORÇAR ATUALIZAÇÃO DA MATRIZ
+        window.camera.updateMatrixWorld(true);
+    }
+    
+    // MANTER MIRA ATIVA
+    if (window.crosshairSystem && window.crosshairSystem.isActive) {
+        window.crosshairSystem.update();
+
+             
                     
                     // ✅ LOG REDUZIDO (só ocasionalmente)
                     if (Math.random() < 0.01) { // 1% das vezes
@@ -2201,6 +2396,27 @@ body.vr-quest-mode .crosshair-tooltip {
                             }
                         }
                     }
+                    calibrateGyroscope() {
+    // ✅ CALIBRAÇÃO PARA POSIÇÃO INICIAL MAIS NATURAL
+    if (window.DeviceOrientationEvent) {
+        const calibrateHandler = (event) => {
+            // Definir orientação inicial como "centro"
+            this.baseOrientation = {
+                alpha: event.alpha || 0,
+                beta: event.beta || 0,
+                gamma: event.gamma || 0
+            };
+            
+            console.log("🎯 Giroscópio calibrado para posição inicial");
+            
+            // Remover handler de calibração
+            window.removeEventListener('deviceorientation', calibrateHandler);
+        };
+        
+        // Calibrar na primeira leitura
+        window.addEventListener('deviceorientation', calibrateHandler, { once: true });
+    }
+}
                                 
             
             checkDeviceSupport() {
@@ -2331,110 +2547,225 @@ body.vr-quest-mode .crosshair-tooltip {
                 }
             }
             
-            async enterGyroMode() {
-                        console.log("📱 Entrando no modo VR livre");
-                        
-                        const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-                        
-                        if (isMobile) {
-                            const hasPermission = await this.requestOrientationPermission();
-                            if (!hasPermission) {
-                                this.hideVRSelection();
-                                return;
-                            }
-                        }
-                        
-                        this.hideVRSelection();
-                        this.currentMode = 'gyro';
-                        this.isVRActive = true;
+           async enterGyroMode() {
+    console.log("📱 Entrando no modo VR livre");
+    
+    // ✅ DETECTAR SE É DESKTOP E MOSTRAR AVISO
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const isSmallScreen = window.innerWidth <= 768;
+    const isDesktop = !isMobile && window.innerWidth > 768;
+    
+   if (isDesktop) {
+    // MOSTRAR AVISO PARA DESKTOP
+    this.showNotification(`
+        📱 <strong>VR Livre - Modo Mobile</strong><br><br>
+        Este modo funciona melhor em <strong>dispositivos móveis</strong>.<br><br>
+        Para a melhor experiência:<br>
+        • Acesse pelo <strong>celular ou tablet</strong><br>
+        • Use o giroscópio para navegar<br><br>
+        <em>Desktop: Use o modo Quest 2 ou navegue normalmente</em>
+    `);
+    
+    // ✅ GARANTIR QUE VR NÃO ATIVE (RESETAR TUDO)
+    this.isVRActive = false;
+    this.currentMode = null;
+    
+    // ✅ ESCONDER MIRA IMEDIATAMENTE
+    if (window.crosshairSystem) {
+        window.crosshairSystem.hide();
+        window.crosshairSystem.isActive = false;
+    }
+    
+    // ✅ FORÇAR ESCONDER ELEMENTOS VR
+    const crosshair = document.getElementById('crosshairPointer');
+    const progress = document.getElementById('crosshairProgress');
+    const tooltip = document.getElementById('crosshairTooltip');
+    
+    if (crosshair) crosshair.style.display = 'none';
+    if (progress) progress.style.display = 'none';
+    if (tooltip) tooltip.style.display = 'none';
+    
+    // ✅ GARANTIR QUE GYRO MODE ESTEJA ESCONDIDO
+    if (this.gyroMode) {
+        this.gyroMode.classList.remove('active');
+        this.gyroMode.style.display = 'none';
+    }
+    
+    // ✅ REMOVER CLASSE DO BODY
+    document.body.classList.remove('gyro-active');
+    
+    // Fechar seleção após 6 segundos
+    setTimeout(() => {
+        this.hideVRSelection();
+    }, 6000);
+    
+    console.log("⚠️ VR Livre bloqueado no desktop - elementos VR escondidos");
+    return; // SAIR SEM ATIVAR VR
 
-                        // ✅ FORÇAR MIRA IMEDIATAMENTE E MÚLTIPLAS VEZES
-                        this.forceCrosshairVisibility();
-                        
-                        // Configurar renderer para modo gyro
-                        this.setupGyroRenderer();
+}
+    
+    // CONTINUAR NORMALMENTE PARA MOBILE
+    if (isMobile) {
+        const hasPermission = await this.requestOrientationPermission();
+        if (!hasPermission) {
+            this.hideVRSelection();
+            return;
+        }
+    }
+    
+    this.hideVRSelection();
+    this.currentMode = 'gyro';
+    this.isVRActive = true;
 
-                        // Mostrar interface gyro
-                        if (this.gyroMode) {
-                            this.gyroMode.classList.add('active');
-                            document.body.classList.add('gyro-active');
-                        }
-                        
-                        // Fullscreen se disponível
-                        if (this.gyroMode && this.gyroMode.requestFullscreen) {
-                            this.gyroMode.requestFullscreen();
-                        }
-                        
-                        const deviceType = isMobile ? "Mobile" : "Desktop";
-                        this.showNotification(`🥽 Modo VR Livre Ativado! (${deviceType})<br>${isMobile ? 'Mova o celular para explorar' : 'Use o mouse para navegar'}`);
-                        this.startGyroRenderLoop();
-                    }
+    // CALIBRAR GIROSCÓPIO DE FORMA MAIS EFICIENTE
+        this.calibrateGyroscope();
+    this.setupGazeInteraction();
+    
+    // ✅ CONFIGURAR GAZE IGUAL AO QUEST 2
+    this.setupGazeInteraction();
+    
+    // ✅ FORÇAR MIRA IMEDIATAMENTE
+    this.forceCrosshairVisibility();
+    
+    // Configurar renderer para modo gyro
+    this.setupGyroRenderer();
 
-                    // ✅ NOVA FUNÇÃO PARA FORÇAR MIRA
+    // Mostrar interface gyro
+    if (this.gyroMode) {
+        this.gyroMode.classList.add('active');
+        document.body.classList.add('gyro-active');
+    }
+    
+    // Fullscreen se disponível
+    if (this.gyroMode && this.gyroMode.requestFullscreen) {
+        this.gyroMode.requestFullscreen();
+    }
+    
+    const deviceType = isMobile ? "Mobile" : "Desktop";
+    this.showNotification(`🥽 Modo VR Livre Ativado! (${deviceType})<br>${isMobile ? 'Mova o celular e olhe por 2s para navegar' : 'Use o mouse para navegar'}`);
+    
+    // ✅ INICIAR GAZE DETECTION POR ÚLTIMO
+    this.startGyroGazeDetection();
+
+    setTimeout(() => {
+        const crosshair = document.getElementById('crosshairPointer');
+        console.log("🧪 TESTE FINAL DA MIRA:", {
+            existe: !!crosshair,
+            visivel: crosshair ? crosshair.style.display : 'N/A',
+            opacity: crosshair ? crosshair.style.opacity : 'N/A',
+            ativo: window.crosshairSystem ? window.crosshairSystem.isActive : false
+        });
+    }, 2000);
+}
+startGyroGazeDetection() {
+    if (!this.isVRActive || this.currentMode !== 'gyro') return;
+    
+    // ✅ MESMO SISTEMA DE GAZE DO QUEST 2
+    this.updateGazeDetection();
+    
+    // Continuar loop
+    requestAnimationFrame(() => this.startGyroGazeDetection());
+}
+
                     forceCrosshairVisibility() {
-                        const forceMira = () => {
-                            if (window.crosshairSystem) {
-                                window.crosshairSystem.show();
-                                window.crosshairSystem.setVRMode(true);
-                                window.crosshairSystem.isActive = true;
-                            }
-                            
-                            // FORÇAR ELEMENTOS DOM
-                            const crosshair = document.getElementById('crosshairPointer');
-                            const progress = document.getElementById('crosshairProgress');
-                            const tooltip = document.getElementById('crosshairTooltip');
-                            
-                            if (crosshair) {
-                                crosshair.style.display = 'block !important';
-                                crosshair.style.visibility = 'visible !important';
-                                crosshair.style.opacity = '1 !important';
-                                crosshair.style.zIndex = '25000 !important';
-                                crosshair.style.position = 'fixed !important';
-                                crosshair.style.top = '50% !important';
-                                crosshair.style.left = '50% !important';
-                                crosshair.style.transform = 'translate(-50%, -50%) !important';
-                                crosshair.style.pointerEvents = 'none !important';
-                                console.log("🎯 Mira FORÇADA visível!");
-                            }
-                            
-                            if (progress) {
-                                progress.style.display = 'block';
-                                progress.style.position = 'fixed';
-                                progress.style.zIndex = '25000';
-                            }
-                            
-                            if (tooltip) {
-                                tooltip.style.display = 'block';
-                                tooltip.style.position = 'fixed';
-                                tooltip.style.zIndex = '25000';
-                            }
-                        };
-                        
-                        // Executar múltiplas vezes para garantir
-                        forceMira();
-                        setTimeout(forceMira, 100);
-                        setTimeout(forceMira, 500);
-                        setTimeout(forceMira, 1000);
-
-
-                        // Configurar renderer para modo gyro
-                        this.setupGyroRenderer();
-
-                        // Mostrar interface gyro
-                        if (this.gyroMode) {
-                            this.gyroMode.classList.add('active');
-                            document.body.classList.add('gyro-active');
-                        }
-                        
-                        // Fullscreen se disponível
-                        if (this.gyroMode && this.gyroMode.requestFullscreen) {
-                            this.gyroMode.requestFullscreen();
-                        }
-                        
-                        const deviceType = isMobile ? "Mobile" : "Desktop";
-                        this.showNotification(`🥽 Modo VR Livre Ativado! (${deviceType})<br>${isMobile ? 'Mova o celular para explorar' : 'Use o mouse para navegar'}`);
-                        this.startGyroRenderLoop();
-                    }
+    const forceMira = () => {
+        if (window.crosshairSystem) {
+            window.crosshairSystem.show();
+            window.crosshairSystem.setVRMode(true);
+            window.crosshairSystem.isActive = true;
+        }
+        
+        // FORÇAR ELEMENTOS DOM
+        const crosshair = document.getElementById('crosshairPointer');
+        const progress = document.getElementById('crosshairProgress');
+        const tooltip = document.getElementById('crosshairTooltip');
+        
+        if (crosshair) {
+            crosshair.style.display = 'block !important';
+            crosshair.style.visibility = 'visible !important';
+            crosshair.style.opacity = '1 !important';
+            crosshair.style.zIndex = '25000 !important';
+            crosshair.style.position = 'fixed !important';
+            crosshair.style.top = '50% !important';
+            crosshair.style.left = '50% !important';
+            crosshair.style.transform = 'translate(-50%, -50%) !important';
+            crosshair.style.pointerEvents = 'none !important';
+            console.log("🎯 Mira FORÇADA visível!");
+        }
+        
+        if (progress) {
+            progress.style.display = 'block';
+            progress.style.position = 'fixed';
+            progress.style.zIndex = '25000';
+        }
+        
+        if (tooltip) {
+            tooltip.style.display = 'block';
+            tooltip.style.position = 'fixed';
+            tooltip.style.zIndex = '25000';
+        }
+    };
+    
+    // Executar múltiplas vezes para garantir
+    forceMira();
+    setTimeout(forceMira, 100);
+    setTimeout(forceMira, 500);
+    setTimeout(forceMira, 1000);
+}
+forceCrosshairVisibility() {
+    const forceMira = () => {
+        if (window.crosshairSystem) {
+            window.crosshairSystem.show();
+            window.crosshairSystem.setVRMode(true);
+            window.crosshairSystem.isActive = true;
+        }
+        
+        // FORÇAR ELEMENTOS DOM
+        const crosshair = document.getElementById('crosshairPointer');
+        const progress = document.getElementById('crosshairProgress');
+        const tooltip = document.getElementById('crosshairTooltip');
+        
+        if (crosshair) {
+            crosshair.style.display = 'block !important';
+            crosshair.style.visibility = 'visible !important';
+            crosshair.style.opacity = '1 !important';
+            crosshair.style.zIndex = '25000 !important';
+            crosshair.style.position = 'fixed !important';
+            crosshair.style.top = '50% !important';
+            crosshair.style.left = '50% !important';
+            crosshair.style.transform = 'translate(-50%, -50%) !important';
+            crosshair.style.pointerEvents = 'none !important';
+            console.log("🎯 Mira FORÇADA visível!");
+        }
+        
+        if (progress) {
+            progress.style.display = 'block';
+            progress.style.position = 'fixed';
+            progress.style.zIndex = '25000';
+        }
+        
+        if (tooltip) {
+            tooltip.style.display = 'block';
+            tooltip.style.position = 'fixed';
+            tooltip.style.zIndex = '25000';
+        }
+    };
+    
+    // Executar múltiplas vezes para garantir
+    forceMira();
+    setTimeout(forceMira, 100);
+    setTimeout(forceMira, 500);
+    setTimeout(forceMira, 1000);
+    
+    // ✅ NOVA LINHA - VERIFICAR CONTINUAMENTE
+    const miraContinua = setInterval(() => {
+        if (this.currentMode === 'gyro' && this.isVRActive) {
+            forceMira();
+        } else {
+            clearInterval(miraContinua);
+        }
+    }, 2000);
+}
                                 
                             async enterQuestMode() {
                         console.log("🥽 Entrando no modo Oculos Quest 2...");
@@ -2561,89 +2892,149 @@ body.vr-quest-mode .crosshair-tooltip {
             }
 
             setupGazeInteraction() {
-                this.gazeTarget = null;
-                this.gazeStartTime = 0;
-                this.gazeDuration = 2000; // 2 segundos olhando
-                
-                console.log("👁️ Sistema de olhar para navegar configurado");
-            }
+            this.gazeTarget = null;
+            this.gazeStartTime = 0;
+            this.gazeDuration = 1500; // 2 segundos olhando
+            
+            console.log("👁️ Sistema de olhar para navegar configurado (Quest + Gyro)");
+        }
 
-            updateGazeDetection() {
-                if (!this.isVRActive || !window.hotspotSystem || !window.raycaster) return;
-                if (window.crosshairSystem && this.currentMode === 'quest') {
-                    window.crosshairSystem.update();
-                }
-                
-                // USAR CENTRO DA VISÃO (onde está olhando)
-                const direction = new THREE.Vector3(0, 0, -1);
-                direction.applyQuaternion(window.camera.quaternion);
-                
-                window.raycaster.set(window.camera.position, direction);
-                
-                // VERIFICAR HOTSPOTS
-                const hotspots = window.hotspotSystem.hotspots.map(h => h.marker).filter(m => m);
-                const intersects = window.raycaster.intersectObjects(hotspots);
-                
-                if (intersects.length > 0) {
-                    const target = intersects[0].object;
-                    
-                    // NOVO ALVO
-                    if (target !== this.gazeTarget) {
-                        this.gazeTarget = target;
-                        this.gazeStartTime = Date.now();
-                        console.log("👁️ Olhando para hotspot...");
-                    }
-                    
-                    // CALCULAR PROGRESSO
-                    const elapsed = Date.now() - this.gazeStartTime;
-                    const progress = Math.min(elapsed / this.gazeDuration, 1);
-                    
-                    // VISUAL FEEDBACK (opcional)
-                    if (target.material) {
-                        target.material.opacity = 0.5 + (progress * 0.5);
-                    }
-                    
-                    // ATIVAR APÓS 2 SEGUNDOS
-                    if (progress >= 1) {
-                        this.activateGazeHotspot(target);
-                    }
-                    
-                } else {
-                    // LIMPAR GAZE
-                    this.clearGaze();
-                }
+           updateGazeDetection() {
+    // ✅ FUNCIONAR TANTO NO QUEST QUANTO NO GYRO
+    if (!this.isVRActive || !window.hotspotSystem || !window.raycaster) return;
+    if (this.currentMode !== 'quest' && this.currentMode !== 'gyro') return;
+    
+    // ✅ ATIVAR CROSSHAIR EM AMBOS OS MODOS
+    if (window.crosshairSystem && (this.currentMode === 'quest' || this.currentMode === 'gyro')) {
+        window.crosshairSystem.show();
+        window.crosshairSystem.setVRMode(true);
+        window.crosshairSystem.update();
+    }
+    
+    // USAR CENTRO DA VISÃO (onde está olhando)
+    const direction = new THREE.Vector3(0, 0, -1);
+    direction.applyQuaternion(window.camera.quaternion);
+    
+    window.raycaster.set(window.camera.position, direction);
+    
+    // VERIFICAR HOTSPOTS
+    const hotspots = window.hotspotSystem.hotspots.map(h => h.marker).filter(m => m);
+    const intersects = window.raycaster.intersectObjects(hotspots);
+    
+    if (intersects.length > 0) {
+        const target = intersects[0].object;
+        
+        // NOVO ALVO
+        if (target !== this.gazeTarget) {
+            this.gazeTarget = target;
+            this.gazeStartTime = Date.now();
+            
+            // ✅ FEEDBACK VISUAL PARA AMBOS OS MODOS
+            if (window.crosshairSystem) {
+                const hotspotData = target.userData.hotspotData;
+                if (hotspotData && window.crosshairSystem.tooltip) {
+    // REMOVER TOOLTIP - SÓ MOSTRAR BARRA DE PROGRESSO
+    // window.crosshairSystem.tooltip.textContent = `${hotspotData.label}`;
+    // window.crosshairSystem.tooltip.classList.add('show');
+}
             }
+            
+            console.log(`👁️ Olhando para: ${target.userData.hotspotData?.label || 'Hotspot'}`);
+        }
+        
+        // CALCULAR PROGRESSO
+        const elapsed = Date.now() - this.gazeStartTime;
+        const progress = Math.min(elapsed / this.gazeDuration, 1);
+        
+        // ✅ VISUAL FEEDBACK PARA AMBOS OS MODOS
+        if (target.material) {
+            target.material.opacity = 0.5 + (progress * 0.5);
+        }
+        
+        // ✅ ATUALIZAR BARRA DE PROGRESSO
+        if (window.crosshairSystem && window.crosshairSystem.progressBar) {
+            window.crosshairSystem.progressBar.style.width = (progress * 100) + '%';
+            if (window.crosshairSystem.progress) {
+                window.crosshairSystem.progress.classList.add('show');
+            }
+        }
+        
+        // ATIVAR APÓS 2 SEGUNDOS
+        if (progress >= 1) {
+            this.activateGazeHotspot(target);
+        }
+        
+    } else {
+        // LIMPAR GAZE
+        this.clearGaze();
+    }
+}
 
 
-            activateGazeHotspot(target) {
-                if (target && target.userData && target.userData.hotspotData) {
-                    const data = target.userData.hotspotData;
-                    
-                    console.log(`👁️ NAVEGAÇÃO POR OLHAR: ${data.label}`);
-                    
-                    // FEEDBACK HÁPTICO NOS CONTROLES
-                    if (this.rightController?.gamepad?.hapticActuators?.[0]) {
-                        this.rightController.gamepad.hapticActuators[0].pulse(0.8, 300);
-                    }
-                    
-                    // NAVEGAR PARA NOVO AMBIENTE
-                    if (window.hotspotSystem) {
-                        window.hotspotSystem.activateHotspot(data);
-                    }
-                    
-                    // RESETAR GAZE
-                    this.clearGaze();
-                }
-            }
+           activateGazeHotspot(target) {
+    if (target && target.userData && target.userData.hotspotData) {
+        const data = target.userData.hotspotData;
+        
+        console.log(`👁️ NAVEGAÇÃO POR OLHAR (${this.currentMode.toUpperCase()}): ${data.label}`);
+        
+        // ✅ FEEDBACK HÁPTICO PARA MOBILE (GYRO)
+        if (this.currentMode === 'gyro' && navigator.vibrate) {
+            navigator.vibrate([200, 100, 200]); // Vibração mais forte para mobile
+        }
+        
+        // FEEDBACK HÁPTICO NOS CONTROLES QUEST
+        if (this.currentMode === 'quest' && this.rightController?.gamepad?.hapticActuators?.[0]) {
+            this.rightController.gamepad.hapticActuators[0].pulse(0.8, 300);
+        }
+        
+        // ✅ FEEDBACK VISUAL FORTE
+        if (target.material) {
+            target.material.color.setHex(0x00ff00); // Verde
+            setTimeout(() => {
+                target.material.color.setHex(0x808080); // Voltar ao cinza
+            }, 500);
+        }
+        
+        // NAVEGAR PARA NOVO AMBIENTE
+        if (window.hotspotSystem) {
+            window.hotspotSystem.activateHotspot(data);
+        }
+        
+        // NOTIFICAÇÃO
+        this.showNotification(`✅ Navegando para: ${data.label}`);
+        
+        // RESETAR GAZE
+        this.clearGaze();
+    }
+}
 
-            clearGaze() {
-                if (this.gazeTarget && this.gazeTarget.material) {
-                    this.gazeTarget.material.opacity = 0.85; // Voltar ao normal
-                }
-                
-                this.gazeTarget = null;
-                this.gazeStartTime = 0;
+                clearGaze() {
+            if (this.gazeTarget && this.gazeTarget.material) {
+                this.gazeTarget.material.opacity = 0.85; // Voltar ao normal
             }
+            
+            this.gazeTarget = null;
+            this.gazeStartTime = 0;
+            
+            // ✅ LIMPAR ELEMENTOS VISUAIS PARA AMBOS OS MODOS
+            if (window.crosshairSystem) {
+                if (window.crosshairSystem.progress) {
+                    window.crosshairSystem.progress.classList.remove('show');
+                }
+                if (window.crosshairSystem.progressBar) {
+                    window.crosshairSystem.progressBar.style.width = '0%';
+                }
+                if (window.crosshairSystem.tooltip) {
+                    window.crosshairSystem.tooltip.classList.remove('show');
+                }
+                if (window.crosshairSystem.crosshair) {
+                    window.crosshairSystem.crosshair.classList.remove('targeting');
+                }
+                if (window.crosshairSystem.arrow) {
+                    window.crosshairSystem.arrow.classList.remove('targeting');
+                }
+            }
+        }
             
             setupQuestControls(session) {
                 console.log("🎮 Configurando movimento 360° e controles Quest...");
@@ -2793,10 +3184,7 @@ body.vr-quest-mode .crosshair-tooltip {
                 
                 // Configurar status
                 const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
-                const gyroStatus = document.getElementById('gyroStatus');
-                if (gyroStatus) {
-                    gyroStatus.textContent = `🥽 Modo Livre Ativo - ${isMobile ? 'Mova o dispositivo' : 'Use o mouse'}`;
-                }
+               
             }
             
             setupStereoRenderers() {
@@ -2945,19 +3333,27 @@ body.vr-quest-mode .crosshair-tooltip {
                 }
             }
             
-          exitVR() {
+         exitVR() {
     console.log("🚪 Saindo do modo VR");
     
-    // ESCONDER MIRA AO SAIR
+    // ESCONDER MIRA E ELEMENTOS AO SAIR
     if (window.crosshairSystem) {
         window.crosshairSystem.hide();
+        // FORÇAR ESCONDER TODOS OS ELEMENTOS VR
+        const crosshair = document.getElementById('crosshairPointer');
+        const progress = document.getElementById('crosshairProgress');
+        const tooltip = document.getElementById('crosshairTooltip');
+        
+        if (crosshair) crosshair.style.display = 'none';
+        if (progress) progress.style.display = 'none';
+        if (tooltip) tooltip.style.display = 'none';
     }
-    // REMOVER MIRA 3D
-if (this.vrCrosshair3D) {
-    window.scene.remove(this.vrCrosshair3D);
-    this.vrCrosshair3D = null;
-}
     
+    // REMOVER MIRA 3D
+    if (this.vrCrosshair3D) {
+        window.scene.remove(this.vrCrosshair3D);
+        this.vrCrosshair3D = null;
+    }
     
     // ENCERRAR SESSÃO WEBXR
     if (this.vrSession) {
@@ -2969,10 +3365,21 @@ if (this.vrCrosshair3D) {
     this.currentMode = null;
     this.clearGaze();
     
-    // REMOVER CLASSE DO BODY
-  
+    // REMOVER CLASSES DO BODY
     document.body.classList.remove('gyro-active');
     document.body.classList.remove('vr-quest-mode');
+
+    // ✅ ESCONDER INTERFACE GYRO COMPLETAMENTE
+    if (this.gyroMode) {
+        this.gyroMode.classList.remove('active');
+        this.gyroMode.style.display = 'none'; // FORÇAR ESCONDER
+    }
+    
+    // ✅ ESCONDER CONTROLES GYRO
+    const gyroControls = document.querySelector('.gyro-controls');
+    if (gyroControls) {
+        gyroControls.style.display = 'none';
+    }
 
     // RESETAR RENDERER
     if (window.renderer) {
@@ -2985,15 +3392,17 @@ if (this.vrCrosshair3D) {
             viewer.innerHTML = '';
             viewer.appendChild(window.renderer.domElement);
         }
-
-        
     }
     
-    // OCULTAR INTERFACES VR
-    if (this.gyroMode) this.gyroMode.classList.remove('active');
+    // ✅ LIMPAR ORIENTAÇÃO E RESETAR CÂMERA
+    if (window.camera) {
+        window.camera.rotation.set(0, 0, 0);
+        targetRotationX = 0;
+        targetRotationY = 0;
+    }
     
     // SAIR DO FULLSCREEN
-    if (document.exitFullscreen) {
+    if (document.exitFullscreen && document.fullscreenElement) {
         document.exitFullscreen();
     }
     
@@ -3004,6 +3413,9 @@ if (this.vrCrosshair3D) {
     }
     
     this.showNotification("📱 VR Desativado");
+    
+    console.log("✅ VR completamente desativado");
+
 
     // ESCONDER MIRA AO SAIR DO VR
     if (window.crosshairSystem) {
@@ -3230,12 +3642,12 @@ createVRCrosshair() {
         if (this.arrow) this.arrow.classList.add('targeting');
         if (this.progress) this.progress.classList.add('show');
         
-        // MOSTRAR TOOLTIP
+        // REMOVER TOOLTIP - SÓ MOSTRAR BARRA DE PROGRESSO
         const hotspotData = this.currentTarget.userData.hotspotData;
         if (hotspotData && this.tooltip) {
-            this.tooltip.textContent = `→ ${hotspotData.label}`;
-            this.tooltip.classList.add('show');
-        }
+            // this.tooltip.textContent = `${hotspotData.label}`;
+            // this.tooltip.classList.add('show');
+}
         
         console.log(`🎯 Mirando: ${hotspotData?.label || 'Hotspot'}`);
     }
@@ -3294,11 +3706,17 @@ createVRCrosshair() {
         this.currentTarget = null;
         this.gazeStartTime = 0;
         
-        // REMOVER VISUAIS
+       // REMOVER VISUAIS
         if (this.crosshair) this.crosshair.classList.remove('targeting');
         if (this.arrow) this.arrow.classList.remove('targeting');
-        if (this.progress) this.progress.classList.remove('show');
-        if (this.tooltip) this.tooltip.classList.remove('show');
+        if (this.progress) {
+            this.progress.classList.remove('show');
+            this.progress.style.display = 'none'; // FORÇAR ESCONDER
+        }
+        if (this.tooltip) {
+            this.tooltip.classList.remove('show');
+            this.tooltip.style.display = 'none'; // FORÇAR ESCONDER
+        }
         if (this.progressBar) this.progressBar.style.width = '0%';
     }
     
@@ -3421,7 +3839,7 @@ setVRMode(isVR) {
             if (gyroModeBtn) {
                 gyroModeBtn.addEventListener('click', function() {
                     console.log("📱 Modo Gyro selecionado");
-                    alert("Modo VR Livre ativado! (Esta é uma demonstração)");
+                    alert("Modo VR Livre ativado!");
                     vrSelectionScreen.style.display = 'none';
                 });
             }
