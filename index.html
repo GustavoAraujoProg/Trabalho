@@ -2293,93 +2293,89 @@ body:not(.gyro-active) #crosshairTooltip {
                     return true;
                 }
             }
-           initializeGyroCalibration() {
-    // CALIBRAÇÃO MELHORADA
+            initializeGyroCalibration() {
+    // CALIBRAÇÃO INICIAL PARA ESTABILIDADE
     this.baseOrientation = { alpha: 0, beta: 0, gamma: 0 };
     this.smoothYaw = 0;
     this.smoothPitch = 0;
     this.isCalibrated = false;
     
-    // DETECTAR ORIENTAÇÃO DO DISPOSITIVO
-    this.deviceOrientation = window.screen.orientation?.angle || 0;
-    
-    console.log("🎯 Sistema de giroscópio calibrado - aguardando primeira leitura");
+    console.log("🎯 Sistema de giroscópio calibrado");
 }
             
-        handleOrientation(event) {
+         handleOrientation(event) {
     if (!this.isVRActive || this.currentMode !== 'gyro') return;
 
-    const alpha = event.alpha || 0;  // Rotação horizontal
-    const beta = event.beta || 0;    // Rotação vertical
-    const gamma = event.gamma || 0;  // Inclinação lateral
+    // ✅ SISTEMA MAIS RESPONSIVO E IMERSIVO
+    const alpha = event.alpha || 0;  // Rotação Y (esquerda/direita)
+    const beta = event.beta || 0;    // Rotação X (cima/baixo)
+    const gamma = event.gamma || 0;  // Rotação Z (inclinação)
 
-    // CALIBRAÇÃO INICIAL (primeira vez)
-    if (!this.isCalibrated && alpha !== 0) {
-        this.baseOrientation = { alpha, beta, gamma };
-        this.isCalibrated = true;
-        console.log("🎯 Giroscópio calibrado!");
-        return;
-    }
-
-    if (!this.isCalibrated) return;
-
-    // CALCULAR DIFERENÇA DA POSIÇÃO INICIAL
-    let deltaAlpha = alpha - this.baseOrientation.alpha;
-    let deltaBeta = beta - this.baseOrientation.beta;
-
-    // CORRIGIR WRAP-AROUND DO ALPHA (0-360°)
-    if (deltaAlpha > 180) deltaAlpha -= 360;
-    if (deltaAlpha < -180) deltaAlpha += 360;
-
-    // APLICAR À CÂMERA (INVERTIDO CORRETAMENTE)
-    this.orientation.alpha = deltaAlpha;
-    this.orientation.beta = deltaBeta;
+    // ✅ APLICAR IMEDIATAMENTE SEM FILTRO EXCESSIVO
+    this.orientation.alpha = alpha;
+    this.orientation.beta = beta;
     this.orientation.gamma = gamma;
 
     this.applyOrientationToCamera();
 }
                     
-                applyOrientationToCamera() {
+                   applyOrientationToCamera() {
     if (!this.isVRActive || this.currentMode !== 'gyro') return;
     
-    // CONVERTER PARA RADIANOS
+    // ✅ CONVERSÃO MAIS RESPONSIVA E NATURAL
     const alpha = this.orientation.alpha * (Math.PI / 180);
     const beta = this.orientation.beta * (Math.PI / 180);
+    const gamma = this.orientation.gamma * (Math.PI / 180);
     
-    // ROTAÇÃO CORRETA (SEM INVERSÃO)
-    let yaw = alpha;  // SEM negativo - movimento natural
-    let pitch = -beta * 0.5; // Reduzir sensibilidade vertical
+    // ✅ CÁLCULO MAIS DIRETO E RESPONSIVO
+    let yaw = -alpha;  // Negativo para rotação natural
+    let pitch = beta - Math.PI / 2;
+    let roll = gamma;
     
-    // LIMITAR MOVIMENTO VERTICAL
-    pitch = Math.max(-Math.PI * 0.3, Math.min(Math.PI * 0.3, pitch));
+    // ✅ LIMITADORES MAIS AMPLOS PARA MAIOR LIBERDADE
+    pitch = Math.max(-Math.PI * 0.4, Math.min(Math.PI * 0.4, pitch));
     
-    // SUAVIZAÇÃO MELHORADA
-    const lerpFactor = 0.15; // Mais suave
+    // ✅ DETECÇÃO DE ORIENTAÇÃO DO DISPOSITIVO
+    const isLandscape = window.screen && window.screen.orientation && 
+                       (window.screen.orientation.angle === 90 || window.screen.orientation.angle === -90);
     
-    // INICIALIZAR SE NECESSÁRIO
-    if (this.smoothYaw === undefined) {
-        this.smoothYaw = yaw;
-        this.smoothPitch = pitch;
+    if (isLandscape) {
+        // Ajustar para modo paisagem
+        const temp = yaw;
+        yaw = pitch;
+        pitch = temp;
     }
     
-    // SUAVIZAÇÃO SEM BUGS
-    this.smoothYaw += (yaw - this.smoothYaw) * lerpFactor;
+    // ✅ APLICAÇÃO MAIS SUAVE MAS RESPONSIVA
+    const lerpFactor = 0.08; // Mais responsivo que 0.015
+    
+    // ✅ INICIALIZAR SE NECESSÁRIO
+    if (this.smoothYaw === undefined) this.smoothYaw = yaw;
+    if (this.smoothPitch === undefined) this.smoothPitch = pitch;
+    
+    // ✅ CORREÇÃO DE WRAP-AROUND MELHORADA
+    let deltaYaw = yaw - this.smoothYaw;
+    while (deltaYaw > Math.PI) deltaYaw -= 2 * Math.PI;
+    while (deltaYaw < -Math.PI) deltaYaw += 2 * Math.PI;
+    
+    // ✅ APLICAR SUAVIZAÇÃO MAIS RESPONSIVA
+    this.smoothYaw += deltaYaw * lerpFactor;
     this.smoothPitch += (pitch - this.smoothPitch) * lerpFactor;
     
-    // APLICAR À CÂMERA
+    // ✅ APLICAR À CÂMERA COM RESPONSIVIDADE
     if (window.camera) {
         window.camera.rotation.order = 'YXZ';
         window.camera.rotation.y = this.smoothYaw;
         window.camera.rotation.x = this.smoothPitch;
-        window.camera.rotation.z = 0; // Sem inclinação
+        window.camera.rotation.z = roll * 0.1; // Leve inclinação para imersão
         
+        // ✅ FORÇAR ATUALIZAÇÃO DA MATRIZ
         window.camera.updateMatrixWorld(true);
     }
     
-    // ATUALIZAR MIRA
+    // MANTER MIRA ATIVA
     if (window.crosshairSystem && window.crosshairSystem.isActive) {
         window.crosshairSystem.update();
-    
 
              
                     
@@ -2622,7 +2618,7 @@ body:not(.gyro-active) #crosshairTooltip {
     this.isVRActive = true;
 
     // CALIBRAR GIROSCÓPIO DE FORMA MAIS EFICIENTE
-        this.initializeGyroCalibration();
+        this.calibrateGyroscope();
     this.setupGazeInteraction();
     
     // ✅ CONFIGURAR GAZE IGUAL AO QUEST 2
